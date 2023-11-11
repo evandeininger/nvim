@@ -63,7 +63,8 @@ return {
       -- online, please don't ask me how to install them :)
       ensure_installed = {
         -- Update this to ensure that you have the debuggers for the langs you want
-        'delve',
+        -- I have no idea why this won't work, I think we need a better dap config or something
+        'node2',
       },
     }
 
