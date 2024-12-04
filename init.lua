@@ -977,16 +977,9 @@ require('lazy').setup({
 -- [[ Configure bufferline ]]
 vim.opt.termguicolors = true
 
--- require('custom.config.autosave')
-require 'custom.config.funcs.diffClipFunc'
-require 'custom.config.funcs.executeBash'
-require 'custom.config.mappings.movelines'
-require 'custom.config.mappings.leader'
-require 'custom.config.dap'
-require 'custom.config.transparency'
-require 'custom.config.mappings.remapping'
-require 'custom.config.mappings.gotoreference'
-require 'custom.config.mappings.gitsigns'
+require 'custom.funcs'
+require 'custom.mappings'
+-- require 'custom.config.dap'
 
 -- CHATGPT
 vim.fn.setenv('OPENAI_API_KEY', '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')

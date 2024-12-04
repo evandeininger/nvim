@@ -3,10 +3,6 @@ return {
     -- add support for tmux navigation in vim using vim motions
     'christoomey/vim-tmux-navigator',
   },
-  -- commenting it out in favor of the kickstart version
-  -- {
-  --   'jiangmiao/auto-pairs',
-  -- },
   {
     -- add support for github copilot
     -- "github/copilot.vim", -- ditching this for something written in lua for performance purposes
@@ -97,6 +93,17 @@ return {
   {
     -- make the background transparent
     'xiyaowong/transparent.nvim',
+    config = function()
+      -- vim.g.transparent_groups = vim.list_extend(
+      --   vim.g.transparent_groups or {},
+      --   vim.tbl_map(function(v)
+      --     return v.hl_group
+      --   end, vim.tbl_values(require('bufferline.config').highlights))
+      -- )
+      -- require('transparent').clear_prefix 'BufferLine'
+      require('transparent').clear_prefix 'NvimTree'
+      -- require('transparent').clear_prefix('lualine')
+    end,
   },
   {
     -- prisma highlighting.
@@ -194,19 +201,24 @@ return {
   {
     -- use fugitive GBrowse to open in devops
     'cedarbaum/fugitive-azure-devops.vim',
+    lazy = true,
   },
-  { 'nvim-neotest/nvim-nio' },
-  {
-    'mfussenegger/nvim-dap',
-  },
-  {
-    'mxsdev/nvim-dap-vscode-js',
-    dependencies = { 'mfussenegger/nvim-dap' },
-  },
-  { 'rcarriga/nvim-dap-ui', dependencies = { 'mfussenegger/nvim-dap' } },
+  -- { 'nvim-neotest/nvim-nio' },
+  -- {
+  --   'mfussenegger/nvim-dap',
+  --   lazy = true,
+  -- },
+  -- {
+  --   'mxsdev/nvim-dap-vscode-js',
+  --   build = 'npm install --legacy-peer-deps && npx gulp vsDebugServerBundle && mv dist out',
+  --   dependencies = { 'mfussenegger/nvim-dap' },
+  --   lazy = true, -- Ensures the plugin is lazy-loaded
+  -- },
+  -- { 'rcarriga/nvim-dap-ui', dependencies = { 'mfussenegger/nvim-dap' }, lazy = true },
   {
     'Joakker/lua-json5',
     build = './install.sh',
+    lazy = true,
   },
   {
     'folke/flash.nvim',
@@ -224,6 +236,7 @@ return {
   },
   {
     'sindrets/diffview.nvim',
+    lazy = true,
   },
   {
     'iamcco/markdown-preview.nvim',
@@ -263,16 +276,55 @@ return {
     end,
   },
   {
+    -- never enough plugins for git 🙄
     'tpope/vim-fugitive',
   },
-  -- {
-  --   'rcarriga/nvim-notify',
-  --   config = function()
-  --     require('notify').setup {
-  --       level = 2,
-  --       render = 'compact',
-  --     }
-  --     vim.notify = require 'notify'
-  --   end,
-  -- },
+  {
+    -- make quickfix list better
+    'kevinhwang91/nvim-bqf',
+  },
+  {
+    'fnune/recall.nvim',
+    version = '*',
+    config = function()
+      local recall = require 'recall'
+
+      recall.setup {
+        sign = '',
+        sign_highlight = '',
+      }
+
+      vim.keymap.set('n', '<leader>mm', recall.toggle, { noremap = true, silent = true })
+      vim.keymap.set('n', '<leader>mn', recall.goto_next, { noremap = true, silent = true })
+      vim.keymap.set('n', '<leader>mp', recall.goto_prev, { noremap = true, silent = true })
+      vim.keymap.set('n', '<leader>mc', recall.clear, { noremap = true, silent = true })
+      vim.keymap.set('n', '<leader>ml', ':Telescope recall<CR>', { noremap = true, silent = true })
+    end,
+  },
+  {
+    -- sticky scroll similar to vscode
+    'nvim-treesitter/nvim-treesitter-context',
+    dependencies = { 'nvim-treesitter/nvim-treesitter' },
+    config = function()
+      require('treesitter-context').setup {
+        enable = true, -- Enable the plugin
+        max_lines = 0, -- No limit on context lines
+        trim_scope = 'outer', -- Discard outer context if max_lines is exceeded
+        mode = 'cursor', -- Line used to calculate context: 'cursor', 'topline'
+        separator = nil, -- No separator between context and content
+        zindex = 20, -- Z-index for the context window
+        on_attach = nil, -- Function to run when attaching
+      }
+    end,
+  },
+  {
+    'rcarriga/nvim-notify',
+    config = function()
+      require('notify').setup {
+        level = 2,
+        render = 'compact',
+      }
+      vim.notify = require 'notify'
+    end,
+  },
 }
