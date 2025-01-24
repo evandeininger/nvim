@@ -153,6 +153,10 @@ return {
         renderer = {
           highlight_opened_files = 'all',
         },
+        view = {
+          side = 'right',
+          width = 60,
+        },
         git = {
           ignore = false,
           enable = true,
@@ -195,24 +199,28 @@ return {
   {
     'EdenEast/nightfox.nvim',
     config = function()
+      require('nightfox').setup {
+        palettes = {
+          duskfox = {
+            bg1 = '#1a1922',
+          },
+        },
+      }
       vim.cmd.colorscheme 'duskfox'
     end,
   },
   {
     -- use fugitive GBrowse to open in devops
     'cedarbaum/fugitive-azure-devops.vim',
-    lazy = true,
   },
   -- { 'nvim-neotest/nvim-nio' },
   -- {
   --   'mfussenegger/nvim-dap',
-  --   lazy = true,
   -- },
   -- {
   --   'mxsdev/nvim-dap-vscode-js',
   --   build = 'npm install --legacy-peer-deps && npx gulp vsDebugServerBundle && mv dist out',
   --   dependencies = { 'mfussenegger/nvim-dap' },
-  --   lazy = true, -- Ensures the plugin is lazy-loaded
   -- },
   -- { 'rcarriga/nvim-dap-ui', dependencies = { 'mfussenegger/nvim-dap' }, lazy = true },
   {
@@ -236,7 +244,6 @@ return {
   },
   {
     'sindrets/diffview.nvim',
-    lazy = true,
   },
   {
     'iamcco/markdown-preview.nvim',
@@ -252,7 +259,7 @@ return {
     config = function()
       require('lualine').setup {
         options = {
-          theme = 'tokyonight',
+          theme = 'duskfox',
         },
         sections = {
           lualine_a = { 'mode' },
