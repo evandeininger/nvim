@@ -11,7 +11,6 @@ require('lazy').setup({
   -- Import plugins from kickstart
   require 'kickstart.plugins.debug',
   require 'kickstart.plugins.autopairs',
-  require 'kickstart.plugins.gitsigns',
 }, {
   ui = {
     icons = vim.g.have_nerd_font and {} or {
@@ -27,7 +26,7 @@ require('lazy').setup({
       source = '📄',
       start = '🚀',
       task = '📌',
-      lazy = '�� ',
+      lazy = '💤',
     },
   },
 })
