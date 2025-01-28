@@ -1,4 +1,14 @@
 -----------------------------------------------------------
+--- CODE FOLDING
+-----------------------------------------------------------
+function Close_all_folds()
+  vim.api.nvim_exec2('%foldc!', { output = false })
+end
+function Open_all_folds()
+  vim.api.nvim_exec2('%foldo!', { output = false })
+end
+
+-----------------------------------------------------------
 -- DiffClipboard
 -- create a diff of the clipboard with the current buffer (no ranges)
 -----------------------------------------------------------
@@ -81,18 +91,25 @@ function QuitAllButCurrent()
     end
   end
 end
-vim.keymap.set('n', '<leader>q', QuitAllButCurrent, { noremap = true, silent = true, desc = 'Quit all except current' })
 
 -----------------------------------------------------------
--- Telescope marks
--- a window to show marks, could be improved to just show marks that are letters
--- NOTE: currently commented out to use recall instead
+-- Lsp_references_excluding_imports_and_tests
+-- update goto references to exclude imports and tests
+-- NOTE: this doesn't seem to work yet, the tests still show up
 -----------------------------------------------------------
--- local builtin = require 'telescope.builtin'
--- vim.keymap.set('n', '<leader>m', function()
---   -- You can pass additional configuration to Telescope to change the theme, layout, etc.
---   builtin.marks(require('telescope.themes').get_dropdown {
---     winblend = 10,
---     previewer = false,
---   })
--- end, { desc = '[M] marks search' })
+function Lsp_references_excluding_imports_and_tests()
+  local entry_filter = function(entry)
+    -- Example: Exclude entries that contain 'import' in a .ts file
+    return not (entry.filename:match '%.ts$' and entry.text:match 'import')
+  end
+
+  require('telescope.builtin').lsp_references {
+    -- Exclude test files
+    file_ignore_patterns = { '%.test%.ts' },
+    entry_maker = function(entry)
+      if entry_filter(entry) then
+        return require('telescope.make_entry').gen_from_quickfix()(entry)
+      end
+    end,
+  }
+end

@@ -116,6 +116,9 @@ return {
     dependencies = {
       'nvim-lua/plenary.nvim',
     },
+    config = function()
+      vim.keymap.set('n', '<leader>gg', ':LazyGit<CR>', { noremap = true, silent = true })
+    end,
   },
   {
     -- file tree
@@ -169,6 +172,7 @@ return {
           args = {},
         },
       }
+      vim.keymap.set('n', '<leader>tt', ':NvimTreeToggle<CR>', { noremap = true, silent = true })
     end,
   },
   -- {
@@ -213,16 +217,6 @@ return {
     -- use fugitive GBrowse to open in devops
     'cedarbaum/fugitive-azure-devops.vim',
   },
-  -- { 'nvim-neotest/nvim-nio' },
-  -- {
-  --   'mfussenegger/nvim-dap',
-  -- },
-  -- {
-  --   'mxsdev/nvim-dap-vscode-js',
-  --   build = 'npm install --legacy-peer-deps && npx gulp vsDebugServerBundle && mv dist out',
-  --   dependencies = { 'mfussenegger/nvim-dap' },
-  -- },
-  -- { 'rcarriga/nvim-dap-ui', dependencies = { 'mfussenegger/nvim-dap' }, lazy = true },
   {
     'Joakker/lua-json5',
     build = './install.sh',
@@ -244,6 +238,15 @@ return {
   },
   {
     'sindrets/diffview.nvim',
+    config = function()
+      vim.keymap.set('n', '<leader>gd', function()
+        if next(require('diffview.lib').views) == nil then
+          vim.cmd 'DiffviewOpen'
+        else
+          vim.cmd 'DiffviewClose'
+        end
+      end, { noremap = true, silent = true, desc = 'Toggle Diffview' })
+    end,
   },
   {
     'iamcco/markdown-preview.nvim',
@@ -290,7 +293,7 @@ return {
     -- make quickfix list better
     'kevinhwang91/nvim-bqf',
   },
-  {
+  { -- make marks easier to make find and navigate
     'fnune/recall.nvim',
     version = '*',
     config = function()
