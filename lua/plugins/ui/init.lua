@@ -8,4 +8,5 @@ return {
   { import = 'plugins.ui.nvim-tree' },    -- file explorer UI
   { import = 'plugins.ui.nightfox' },     -- colorscheme
   { import = 'plugins.ui.devicons' },     -- file icons
+  { import = 'plugins.ui.dashboard' },     -- Dashboard
 } 

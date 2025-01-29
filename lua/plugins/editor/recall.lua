@@ -1,3 +1,5 @@
+local keymap_set = require('utils').keymap_set
+
 return {
   'fnune/recall.nvim',
   version = '*',
@@ -5,14 +7,15 @@ return {
     local recall = require 'recall'
 
     recall.setup {
-      sign = '',
+      sign = '',
       sign_highlight = '',
     }
 
-    vim.keymap.set('n', '<leader>mm', recall.toggle, { noremap = true, silent = true })
-    vim.keymap.set('n', '<leader>mn', recall.goto_next, { noremap = true, silent = true })
-    vim.keymap.set('n', '<leader>mp', recall.goto_prev, { noremap = true, silent = true })
-    vim.keymap.set('n', '<leader>mc', recall.clear, { noremap = true, silent = true })
-    vim.keymap.set('n', '<leader>ml', ':Telescope recall<CR>', { noremap = true, silent = true })
+    keymap_set('n', '<leader>mm', recall.toggle, 'Toggle mark')
+    keymap_set('n', '<leader>mn', recall.goto_next, 'Go to next mark')
+    keymap_set('n', '<leader>mp', recall.goto_prev, 'Go to previous mark')
+    keymap_set('n', '<leader>mc', recall.clear, 'Clear marks')
+    keymap_set('n', '<leader>ml', ':Telescope recall<CR>', 'List marks')
   end,
-} 
+}
+
