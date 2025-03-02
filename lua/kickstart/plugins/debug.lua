@@ -122,6 +122,12 @@ return {
     end
 
     local function load_last_dap_session()
+      -- Prevent duplicate debuggers
+      if dap.session() then
+        print 'Already attached to a debugger. Skipping reconnect.'
+        return
+      end
+
       local filename = vim.fn.stdpath 'data' .. '/last_dap_session.json'
       local file = io.open(filename, 'r')
       if file then
@@ -129,16 +135,38 @@ return {
         file:close()
         if config then
           dap.run(config)
-          print 'Loaded last DAP session.'
+          print 'Reconnected to last DAP session.'
         end
       else
         print 'No saved DAP session found.'
       end
     end
 
+    dap.listeners.before.event_terminated['dap_reconnect'] = function()
+      vim.defer_fn(function()
+        if not dap.session() then -- Check if a session already exists
+          print 'DAP session ended. Attempting to reconnect...'
+          load_last_dap_session()
+        end
+      end, 500)
+    end
+
+    dap.listeners.before.event_exited['dap_reconnect'] = function()
+      vim.defer_fn(function()
+        if not dap.session() then -- Prevent duplicate sessions
+          print 'DAP session exited. Attempting to reconnect...'
+          load_last_dap_session()
+        end
+      end, 500)
+    end
+
     -- Keybindings to save and restore sessions
     vim.keymap.set('n', '<leader>dS', save_last_dap_session, { desc = 'Save DAP session' })
     vim.keymap.set('n', '<leader>dl', load_last_dap_session, { desc = 'Load last DAP session' })
+
+    dap.listeners.after.event_initialized['dapui_config'] = dapui.open
+    dap.listeners.before.event_terminated['dapui_config'] = dapui.close
+    dap.listeners.before.event_exited['dapui_config'] = dapui.close
 
     -- Install golang specific config
     require('dap-go').setup {
