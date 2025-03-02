@@ -22,6 +22,8 @@ return {
     'saadparwaiz1/cmp_luasnip',
     'hrsh7th/cmp-nvim-lsp',
     'hrsh7th/cmp-path',
+
+    'rcarriga/cmp-dap',
   },
   config = function()
     local cmp = require 'cmp'
@@ -35,7 +37,9 @@ return {
         end,
       },
       completion = { completeopt = 'menu,menuone,noinsert' },
-
+      enabled = function()
+        return vim.api.nvim_buf_get_option(0, 'buftype') ~= 'prompt' or require('cmp_dap').is_dap_buffer()
+      end,
       mapping = cmp.mapping.preset.insert {
         ['<C-n>'] = cmp.mapping.select_next_item(),
         ['<C-p>'] = cmp.mapping.select_prev_item(),
@@ -64,5 +68,11 @@ return {
         { name = 'path' },
       },
     }
+    cmp.setup.filetype({ 'dap-repl', 'dapui_watches' }, {
+      sources = {
+        { name = 'dap' },
+      },
+    })
   end,
-} 
+}
+
