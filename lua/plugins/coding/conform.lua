@@ -27,10 +27,13 @@ return {
         lsp_format = lsp_format_opt,
       }
     end,
+    -- https://www.reddit.com/r/neovim/comments/1d3iodk/eslint_and_conform/
+    -- fix later for eslint
     formatters_by_ft = {
       lua = { 'stylua' },
       javascript = { 'prettierd', 'prettier', stop_after_first = true },
       typescript = { 'prettierd', 'prettier', stop_after_first = true },
     },
   },
-} 
+}
+
