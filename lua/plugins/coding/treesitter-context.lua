@@ -7,9 +7,10 @@ return {
       max_lines = 0,
       trim_scope = 'outer',
       mode = 'cursor',
-      separator = nil,
+      separator = '—',
       zindex = 20,
       on_attach = nil,
     }
   end,
-} 
+}
+
