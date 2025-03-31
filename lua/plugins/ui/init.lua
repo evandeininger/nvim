@@ -6,7 +6,8 @@ return {
   -- commented out for snacks.nvim
   -- { import = 'plugins.ui.notify' }, -- notification UI
   { import = 'plugins.ui.lualine' }, -- status line
-  { import = 'plugins.ui.nvim-tree' }, -- file explorer UI
+  -- commented out for snacks.nvim
+  -- { import = 'plugins.ui.nvim-tree' }, -- file explorer UI
   { import = 'plugins.ui.nightfox' }, -- colorscheme
   { import = 'plugins.ui.devicons' }, -- file icons
   -- commented out for snacks.nvim
