@@ -43,8 +43,8 @@ return {
         cvs = false,
         ['.'] = false,
       },
-      copilot_node_command = 'node',
-      server_opts_overrides = {},
+      copilot_node_command = vim.fn.expand '$HOME' .. '/.nvm/versions/node/v22.13.1/bin/node', -- Node.js version must be > 20
     }
   end,
-} 
+}
+

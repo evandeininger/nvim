@@ -1,4 +1,6 @@
 if vim.g.vscode then
+  -- Enable clipboard sharing in VSCode
+  vim.opt.clipboard = 'unnamedplus'
   return
 end
 

@@ -10,7 +10,15 @@ return {
     bigfile = { enabled = true },
     dashboard = { enabled = true },
     -- indent = { enabled = true },
-    input = { enabled = true },
+    -- input = { enabled = true },
+    lazygit = { enabled = true },
+    notifier = { enabled = true },
+    quickfile = { enabled = true },
+    -- scope = { enabled = true },
+    scroll = { enabled = true },
+    statuscolumn = { enabled = true },
+    words = { enabled = true },
+    -- too many issues with git status, explorer having extra files etc, going to wait for maturity
     explorer = { enabled = true },
     picker = {
       sources = {
@@ -71,13 +79,6 @@ return {
         },
       },
     },
-    lazygit = { enabled = true },
-    notifier = { enabled = true },
-    quickfile = { enabled = true },
-    -- scope = { enabled = true },
-    scroll = { enabled = true },
-    statuscolumn = { enabled = true },
-    words = { enabled = true },
   },
   keys = {
     -- git
