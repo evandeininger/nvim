@@ -58,7 +58,7 @@ keymap_set('v', '<M-K>', 'y`<P`>')
 
 -- [[ Custom Commands ]]
 keymap_set('n', '<leader>q', QuitAllButCurrent, 'Quit all except current')
-keymap_set('n', 'gr', Lsp_references_excluding_imports_and_tests, '[G]oto [R]eferences without tests')
+-- keymap_set('n', 'gr', Lsp_references_excluding_imports_and_tests, '[G]oto [R]eferences without tests')
 
 -- [[ Code Folding ]]
 -- don't know if I need this with zR and zM

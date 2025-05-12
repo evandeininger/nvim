@@ -81,7 +81,7 @@ return {
 
           -- Find references for the word under your cursor.
           -- map('gR', require('telescope.builtin').lsp_references, '[G]oto [R]eferences')
-          map('gR', Snacks.picker.lsp_references, '[G]oto [R]eferences')
+          map('gr', Snacks.picker.lsp_references, '[G]oto [R]eferences')
 
           -- Jump to the implementation of the word under your cursor.
           --  Useful when your language has ways of declaring types without an actual implementation.
@@ -193,8 +193,7 @@ return {
         --    https://github.com/pmizio/typescript-tools.nvim
         --
         -- But for many setups, the LSP (`ts_ls`) will work just fine
-        -- ts_ls = {},
-        --
+        ts_ls = {},
 
         -- eslint = {
         --   capabilities = capabilities,

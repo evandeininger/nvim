@@ -27,8 +27,8 @@ return {
         highlight_opened_files = 'all',
       },
       view = {
-        side = 'right',
-        width = 60,
+        side = 'left',
+        width = 40,
       },
       git = {
         ignore = false,
@@ -41,4 +41,5 @@ return {
     }
     vim.keymap.set('n', '<leader>tt', ':NvimTreeToggle<CR>', { noremap = true, silent = true })
   end,
-} 
+}
+

@@ -66,6 +66,7 @@ return {
         { name = 'nvim_lsp' },
         { name = 'luasnip' },
         { name = 'path' },
+        { name = 'nvim_lsp_signature_help' }, -- not sure this is doing anything
       },
     }
     cmp.setup.filetype({ 'dap-repl', 'dapui_watches' }, {
@@ -75,4 +76,3 @@ return {
     })
   end,
 }
-

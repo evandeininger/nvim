@@ -32,3 +32,32 @@ vim.opt.rtp:prepend(lazypath)
 --
 -- -- save on focus out
 -- vim.cmd([[ au FocusLost * :w ]])
+
+-------------
+-- TESTING --
+-------------
+-- Disable swapfile for NvimTree buffers
+vim.api.nvim_create_autocmd('BufReadPre', {
+  pattern = 'NvimTree_*',
+  callback = function()
+    vim.opt_local.swapfile = false
+  end,
+})
+
+-------------
+-- TESTING --
+-------------
+-- Auto-cleanup stale swap files at startup
+vim.api.nvim_create_autocmd('VimEnter', {
+  callback = function()
+    local swap_dir = vim.fn.stdpath 'state' .. '/nvim/swap'
+    local handle = io.popen('find "' .. swap_dir .. '" -type f -name "*.swp"')
+    if handle then
+      for file in handle:lines() do
+        os.remove(file)
+        vim.notify('Deleted stale swap file: ' .. file, vim.log.levels.WARN)
+      end
+      handle:close()
+    end
+  end,
+})
