@@ -38,8 +38,6 @@ return {
         'NvimTreeNormal',
         'NvimTreeNormalNC',
         'TroubleNormal',
-        'TelescopeNormal',
-        'TelescopeBorder',
         'WhichKeyFloat',
 
         -- TODO: programmatically add this
