@@ -5,6 +5,7 @@ return {
   version = '*',
   config = function()
     local recall = require 'recall'
+    local recallSnacks = require 'recall.snacks'
 
     recall.setup {
       sign = '',
@@ -15,7 +16,6 @@ return {
     keymap_set('n', '<leader>mn', recall.goto_next, 'Go to next mark')
     keymap_set('n', '<leader>mp', recall.goto_prev, 'Go to previous mark')
     keymap_set('n', '<leader>mc', recall.clear, 'Clear marks')
-    keymap_set('n', '<leader>ml', ':Telescope recall<CR>', 'List marks')
+    keymap_set('n', '<leader>ml', recallSnacks.pick, 'List marks')
   end,
 }
-

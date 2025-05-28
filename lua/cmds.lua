@@ -93,28 +93,6 @@ function QuitAllButCurrent()
 end
 
 -----------------------------------------------------------
--- Lsp_references_excluding_imports_and_tests
--- update goto references to exclude imports and tests
--- NOTE: this doesn't seem to work yet, the tests still show up
------------------------------------------------------------
-function Lsp_references_excluding_imports_and_tests()
-  local entry_filter = function(entry)
-    -- Example: Exclude entries that contain 'import' in a .ts file
-    return not (entry.filename:match '%.ts$' and entry.text:match 'import')
-  end
-
-  require('telescope.builtin').lsp_references {
-    -- Exclude test files
-    file_ignore_patterns = { '%.test%.ts' },
-    entry_maker = function(entry)
-      if entry_filter(entry) then
-        return require('telescope.make_entry').gen_from_quickfix()(entry)
-      end
-    end,
-  }
-end
-
------------------------------------------------------------
 -- RunTSCQuickfix
 -- Create a custom command to run tsc and populate the quickfix list
 -----------------------------------------------------------

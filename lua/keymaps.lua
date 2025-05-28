@@ -30,35 +30,34 @@ keymap_set('x', '<leader>p', [["_dP]])
 -----------------------------------------------------------
 -- MOVE LINES
 -- Normal mode mappings
-keymap_set('n', '<M-j>', ':m .+1<CR>==')
-keymap_set('n', '<M-k>', ':m .-2<CR>==')
+keymap_set('n', '<M-j>', ':m .+1<CR>==', 'Move line down in Normal mode')
+keymap_set('n', '<M-k>', ':m .-2<CR>==', 'Move line up in Normal mode')
 
 -- Insert mode mappings
-keymap_set('i', '<M-j>', '<Esc>:m .+1<CR>==gi')
-keymap_set('i', '<M-k>', '<Esc>:m .-2<CR>==gi')
+keymap_set('i', '<M-j>', '<Esc>:m .+1<CR>==gi', 'Move line down in Insert mode')
+keymap_set('i', '<M-k>', '<Esc>:m .-2<CR>==gi', 'Move line up in Insert mode')
 
 -- Visual mode mappings
-keymap_set('v', '<M-j>', ":m '>+1<CR>gv=gv")
-keymap_set('v', '<M-k>', ":m '<-2<CR>gv=gv")
+keymap_set('v', '<M-j>', ":m '>+1<CR>gv=gv", 'Move selection down in Visual mode')
+keymap_set('v', '<M-k>', ":m '<-2<CR>gv=gv", 'Move selection up in Visual mode')
 
 -- CLONE LINES
 -- Copy line or selection in Normal mode when using Shift with <M-j> and <M-k>
-keymap_set('n', '<M-J>', 'yyp')
-keymap_set('n', '<M-K>', 'yyP')
+keymap_set('n', '<M-J>', 'yyp', 'Copy line down in Normal mode')
+keymap_set('n', '<M-K>', 'yyP', 'Copy line up in Normal mode')
 
 -- Copy line in Insert mode when using Shift with <M-j> and <M-k>
-keymap_set('i', '<M-J>', '<Esc>yypgi')
-keymap_set('i', '<M-K>', '<Esc>yyPgi')
+keymap_set('i', '<M-J>', '<Esc>yypgi', 'Copy line down in Insert mode')
+keymap_set('i', '<M-K>', '<Esc>yyPgi', 'Copy line up in Insert mode')
 
 -- Copy selection in Visual mode when using Shift with <M-j> and <M-k>
-keymap_set('v', '<M-J>', 'y`>p`<')
-keymap_set('v', '<M-K>', 'y`<P`>')
+keymap_set('v', '<M-J>', 'y`>p`<', 'Copy selection down in Visual mode')
+keymap_set('v', '<M-K>', 'y`<P`>', 'Copy selection up in Visual mode')
 
 -----------------------------------------------------------
 
 -- [[ Custom Commands ]]
 keymap_set('n', '<leader>q', QuitAllButCurrent, 'Quit all except current')
--- keymap_set('n', 'gr', Lsp_references_excluding_imports_and_tests, '[G]oto [R]eferences without tests')
 
 -- [[ Code Folding ]]
 -- don't know if I need this with zR and zM
@@ -76,3 +75,5 @@ keymap_set('n', '<C-LeftMouse>', '<Plug>(VM-Mouse-Cursor)')
 keymap_set('n', '<C-RightMouse>', '<Plug>(VM-Mouse-Word)')
 -- Map Alt + Ctrl + Right Mouse
 keymap_set('n', '<M-C-RightMouse>', '<Plug>(VM-Mouse-Column)')
+
+keymap_set('n', 'C-O', ':b#', 'Previous Buffer')

@@ -9,6 +9,7 @@ require 'cmds'
 require 'keymaps'
 require 'autocmds'
 require 'env'
+require 'defer'
 
 -- [[ Configure and install plugins ]]
 require('lazy').setup({

@@ -4,6 +4,6 @@ return {
   { import = 'plugins.ui.which-key' }, -- keybind popup UI
   { import = 'plugins.ui.todo-comments' }, -- TODO comment highlighting
   { import = 'plugins.ui.lualine' }, -- status line
-  { import = 'plugins.ui.nvim-tree' }, -- file explorer UI
+  -- { import = 'plugins.ui.nvim-tree' }, -- file explorer UI
   { import = 'plugins.ui.nightfox' }, -- colorscheme
 }

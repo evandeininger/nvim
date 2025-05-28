@@ -19,58 +19,44 @@ return {
     statuscolumn = { enabled = true },
     words = { enabled = true },
     -- too many issues with git status, explorer having extra files etc, going to wait for maturity
-    -- explorer = { enabled = true },
+    explorer = {
+      enabled = true,
+    },
     picker = {
       filter = { cwd = true },
-      -- sources = {
-      --   explorer = {
-      --     jump = { close = true }, -- Close explorer after selecting a file
-      --     actions = {
-      --       search_in_directory = {
-      --         action = function(_, item)
-      --           if not item then
-      --             return
-      --           end
-      --           local dir = vim.fn.fnamemodify(item.file, ':p:h')
-      --           Snacks.picker.grep {
-      --             cwd = dir,
-      --             cmd = 'rg',
-      --             args = {
-      --               '-g',
-      --               '!.git',
-      --               '-g',
-      --               '!node_modules',
-      --               '-g',
-      --               '!dist',
-      --               '-g',
-      --               '!build',
-      --               '-g',
-      --               '!coverage',
-      --               '-g',
-      --               '!.DS_Store',
-      --               '-g',
-      --               '!.docusaurus',
-      --               '-g',
-      --               '!.dart_tool',
-      --             },
-      --             show_empty = true,
-      --             hidden = true,
-      --             ignored = true,
-      --             follow = false,
-      --             supports_live = true,
-      --           }
-      --         end,
-      --       },
-      --     },
-      --     win = {
-      --       list = {
-      --         keys = {
-      --           ['s'] = 'search_in_directory',
-      --         },
-      --       },
-      --     },
-      --   },
-      -- },
+      sources = {
+        explorer = {
+          hidden = true,
+          ignored = true,
+          jump = { close = true }, -- Close explorer after selecting a file
+          actions = {
+            search_in_directory = {
+              action = function(_, item)
+                if not item then
+                  return
+                end
+                local dir = vim.fn.fnamemodify(item.file, ':p:h')
+                Snacks.picker.grep {
+                  cwd = dir,
+                  cmd = 'rg',
+                  show_empty = true,
+                  hidden = true,
+                  ignored = true,
+                  follow = false,
+                  supports_live = true,
+                }
+              end,
+            },
+          },
+          win = {
+            list = {
+              keys = {
+                ['s'] = 'search_in_directory',
+              },
+            },
+          },
+        },
+      },
       ui_select = true,
       win = {
         input = {
@@ -177,13 +163,13 @@ return {
       end,
       desc = '[N]otifier [H]istory',
     },
-    -- {
-    --   '<leader>gs',
-    --   function()
-    --     require('snacks').picker.git_status { filter = { cwd = true }, cwd = vim.fn.getcwd() }
-    --   end,
-    --   desc = '[G]it [S]tatus',
-    -- },
+    {
+      '<leader>gs',
+      function()
+        require('snacks').picker.git_status { filter = { cwd = true }, cwd = vim.fn.getcwd() }
+      end,
+      desc = '[G]it [S]tatus',
+    },
     {
       '<leader>/',
       function()
