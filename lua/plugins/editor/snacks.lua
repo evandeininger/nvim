@@ -8,7 +8,23 @@ return {
     -- or leave it empty to use the default settings
     -- refer to the configuration section below
     bigfile = { enabled = true },
-    dashboard = { enabled = true },
+    dashboard = {
+      enabled = true,
+      preset = {
+        header = [[
+ ▄▄▄▄   ▄███████▓  ██████ 
+▓█████▄    ██▒ ▓▒▒██    ▒ 
+▒██▒ ▄██▒ ▓██░ ▒░░ ▓██▄   
+▒██░█▀  ░ ▓██▓ ░   ▒   ██▒
+░▓█  ▀█▓  ▒██▒ ░ ▒██████▒▒
+░▒████▀▒  ▒ ░░   ▒ ▒▓▒ ▒ ░
+▒░▒   ░     ░    ░ ░▒  ░ ░
+ ░    ░   ░      ░  ░  ░  
+ ░                     ░  
+      ░                   
+        ]],
+      },
+    },
     -- indent = { enabled = true },
     -- input = { enabled = true },
     lazygit = { enabled = true },
@@ -30,6 +46,49 @@ return {
           ignored = true,
           jump = { close = true }, -- Close explorer after selecting a file
           actions = {
+            copy_path = function(_, item)
+              local modify = vim.fn.fnamemodify
+
+              local filepath = item.file
+              local filename = modify(filepath, ':t')
+
+              local results = {
+                filepath,
+                modify(filepath, ':.'),
+                modify(filepath, ':~'),
+                filename,
+                modify(filename, ':r'),
+                modify(filename, ':e'),
+              }
+
+              local items = {
+                'Absolute path: ' .. results[1],
+                'Path relative to CWD: ' .. results[2],
+                'Path relative to HOME: ' .. results[3],
+                'Filename: ' .. results[4],
+              }
+
+              if vim.fn.isdirectory(filepath) == 0 then
+                vim.list_extend(items, {
+                  'Filename without extension: ' .. results[5],
+                  'Extension of the filename: ' .. results[6],
+                })
+              end
+
+              vim.ui.select(items, { prompt = 'Choose to copy to clipboard:' }, function(choice, i)
+                if not choice then
+                  vim.notify 'Selection cancelled'
+                  return
+                end
+                if not i then
+                  vim.notify 'Invalid selection'
+                  return
+                end
+                local result = results[i]
+                vim.fn.setreg('*', result)
+                vim.notify('Copied: ' .. result)
+              end)
+            end,
             search_in_directory = {
               action = function(_, item)
                 if not item then
@@ -52,6 +111,7 @@ return {
             list = {
               keys = {
                 ['s'] = 'search_in_directory',
+                ['Y'] = 'copy_path',
               },
             },
           },
