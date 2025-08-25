@@ -182,7 +182,30 @@ return {
       local servers = {
         -- clangd = {},
         -- gopls = {},
-        -- pyright = {},
+        pyright = {
+          settings = {
+            python = {
+              analysis = {
+                autoSearchPaths = true,
+                useLibraryCodeForTypes = true,
+                diagnosticMode = 'workspace',
+                typeCheckingMode = 'basic',
+              },
+            },
+          },
+          on_new_config = function(config, root_dir)
+            -- Set python path from virtual environment
+            local venv = vim.env.VIRTUAL_ENV
+            if venv then
+              local venv_python = venv .. '/bin/python'
+              if vim.fn.executable(venv_python) == 1 then
+                config.settings = config.settings or {}
+                config.settings.python = config.settings.python or {}
+                config.settings.python.pythonPath = venv_python
+              end
+            end
+          end,
+        },
         -- rust_analyzer = {},
         -- ... etc. See `:help lspconfig-all` for a list of all the pre-configured LSPs
         --
@@ -245,7 +268,13 @@ return {
       vim.list_extend(ensure_installed, {
         'stylua', -- Used to format Lua code
         'ts_ls', -- TypeScript Language Server
+        -- Python tools
+        'black', -- Python formatter
+        'flake8', -- Python linter
+        'mypy', -- Python type checker
+        'debugpy', -- Python debugger
       })
+      
       require('mason-tool-installer').setup { ensure_installed = ensure_installed }
 
       require('mason-lspconfig').setup {
