@@ -22,6 +22,7 @@ return {
       { 'williamboman/mason.nvim', config = true }, -- NOTE: Must be loaded before dependants
       'williamboman/mason-lspconfig.nvim',
       'WhoIsSethDaniel/mason-tool-installer.nvim',
+      'nvim-lua/plenary.nvim', -- Required for Path utilities
 
       -- Useful status updates for LSP.
       -- NOTE: `opts = {}` is the same as calling `require('fidget').setup({})`
@@ -154,6 +155,41 @@ return {
         end,
       })
 
+      -- Restart TypeScript server when config files change
+      vim.api.nvim_create_autocmd({ 'BufWritePost' }, {
+        group = vim.api.nvim_create_augroup('restart-ts-server', { clear = true }),
+        pattern = { 'tsconfig.json', 'jsconfig.json', 'package.json' },
+        callback = function()
+          vim.cmd('LspRestart ts_ls')
+        end,
+      })
+
+      -- Configure diagnostics
+      vim.diagnostic.config({
+        virtual_text = {
+          prefix = '●',
+          source = 'if_many',
+        },
+        float = {
+          source = 'always',
+          border = 'rounded',
+        },
+        signs = true,
+        underline = true,
+        update_in_insert = false,
+        severity_sort = true,
+      })
+
+      -- Add command to restart TypeScript server and clear cache
+      vim.api.nvim_create_user_command('TsRestart', function()
+        vim.cmd('LspStop ts_ls')
+        vim.wait(1000) -- Wait 1 second
+        vim.cmd('LspStart ts_ls')
+        vim.notify('TypeScript server restarted', vim.log.levels.INFO)
+      end, { desc = 'Restart TypeScript Language Server' })
+
+
+
       -- Change diagnostic symbols in the sign column (gutter)
       -- if vim.g.have_nerd_font then
       --   local signs = { Error = '', Warn = '', Hint = '', Info = '' }
@@ -213,7 +249,49 @@ return {
         --    https://github.com/pmizio/typescript-tools.nvim
         --
         -- But for many setups, the LSP (`ts_ls`) will work just fine
-        ts_ls = {},
+        ts_ls = {
+          root_dir = require('lspconfig.util').root_pattern('tsconfig.json', 'jsconfig.json', 'package.json', '.git'),
+          filetypes = {
+            'javascript',
+            'javascriptreact',
+            'javascript.jsx',
+            'typescript',
+            'typescriptreact',
+            'typescript.tsx',
+          },
+          single_file_support = true,
+          init_options = {
+            preferences = {
+              disableSuggestions = false,
+              includeCompletionsForModuleExports = true,
+              includeCompletionsWithInsertText = true,
+            },
+          },
+          settings = {
+            typescript = {
+              inlayHints = {
+                includeInlayParameterNameHints = 'all',
+                includeInlayParameterNameHintsWhenArgumentMatchesName = false,
+                includeInlayFunctionParameterTypeHints = true,
+                includeInlayVariableTypeHints = true,
+                includeInlayPropertyDeclarationTypeHints = true,
+                includeInlayFunctionLikeReturnTypeHints = true,
+                includeInlayEnumMemberValueHints = true,
+              },
+            },
+            javascript = {
+              inlayHints = {
+                includeInlayParameterNameHints = 'all',
+                includeInlayParameterNameHintsWhenArgumentMatchesName = false,
+                includeInlayFunctionParameterTypeHints = true,
+                includeInlayVariableTypeHints = true,
+                includeInlayPropertyDeclarationTypeHints = true,
+                includeInlayFunctionLikeReturnTypeHints = true,
+                includeInlayEnumMemberValueHints = true,
+              },
+            },
+          },
+        },
 
         -- eslint = {
         --   capabilities = capabilities,
