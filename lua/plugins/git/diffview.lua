@@ -1,5 +1,6 @@
 return {
   'sindrets/diffview.nvim',
+  event = { 'BufReadPost', 'BufNewFile' },
   config = function()
     vim.keymap.set('n', '<leader>gd', function()
       if next(require('diffview.lib').views) == nil then
@@ -9,4 +10,4 @@ return {
       end
     end, { noremap = true, silent = true, desc = 'Toggle Diffview' })
   end,
-} 
+}
