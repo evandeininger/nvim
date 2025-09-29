@@ -77,3 +77,9 @@ keymap_set('n', '<C-RightMouse>', '<Plug>(VM-Mouse-Word)')
 keymap_set('n', '<M-C-RightMouse>', '<Plug>(VM-Mouse-Column)')
 
 keymap_set('n', 'C-O', ':b#', 'Previous Buffer')
+
+-----------------------------------------------------------
+--- Terminal mode
+--- Pressing <Esc> in terminal mode to exit to normal mode
+-----------------------------------------------------------
+vim.keymap.set('t', '<Esc>', [[<C-\><C-n>]], { desc = 'Terminal: exit to Normal mode' })
