@@ -8,4 +8,7 @@ return {
     import = 'plugins.editor.snacks',
   },
   { import = 'plugins.editor.mini' }, -- text objects and surround
+  {
+    import = 'plugins.editor.oil',
+  },
 }
