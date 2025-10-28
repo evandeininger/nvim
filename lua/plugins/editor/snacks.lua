@@ -32,7 +32,10 @@ return {
     quickfile = { enabled = true },
     -- scope = { enabled = true },
     scroll = { enabled = true },
-    statuscolumn = { enabled = true },
+    statuscolumn = {
+      enabled = true,
+      left = { "sign", "mark" }, -- prioritize sign over mark, so recall icon shows instead of letter
+    },
     words = { enabled = true },
     -- too many issues with git status, explorer having extra files etc, going to wait for maturity
     explorer = {
