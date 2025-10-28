@@ -8,7 +8,5 @@ return {
     import = 'plugins.editor.snacks',
   },
   { import = 'plugins.editor.mini' }, -- text objects and surround
-  {
-    import = 'plugins.editor.oil',
-  },
+  -- { import = 'plugins.editor.oil' }, -- file explorer, currently disabled in favor of snacks explorer
 }
