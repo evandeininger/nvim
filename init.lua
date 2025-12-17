@@ -15,14 +15,24 @@ else
   require 'defer'
 
   -- [[ Configure and install plugins ]]
-  require('lazy').setup({
+  local ok, lazy = pcall(require, 'lazy')
+  if not ok then
+    vim.notify('Failed to load lazy.nvim', vim.log.levels.ERROR)
+    return
+  end
+
+  lazy.setup({
     -- Import all plugins from lua/plugins/
     { import = 'plugins' },
     -- Import plugins from kickstart
     require 'kickstart.plugins.debug',
-    require 'kickstart.plugins.autopairs',
   }, {
+    install = {
+      missing = true,
+      colorscheme = { 'nightfox' }, -- fallback colorscheme
+    },
     ui = {
+      wrap = true, -- wrap lines in UI
       icons = vim.g.have_nerd_font and {} or {
         cmd = '⌘',
         config = '🛠',
