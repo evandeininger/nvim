@@ -79,6 +79,17 @@ keymap_set('n', '<M-C-RightMouse>', '<Plug>(VM-Mouse-Column)')
 keymap_set('n', 'C-O', ':b#', 'Previous Buffer')
 
 -----------------------------------------------------------
+--- Copy file paths
+--- <leader>yd: copy file path relative to current working directory
+-----------------------------------------------------------
+vim.keymap.set('n', '<leader>yf', function()
+  local filepath = vim.fn.expand '%:.'
+  vim.fn.setreg('+', filepath)
+  vim.fn.setreg('*', filepath)
+  vim.notify('Copied to clipboard: ' .. filepath, vim.log.levels.INFO)
+end, { desc = 'Copy file path relative to CWD', noremap = true, silent = true })
+
+-----------------------------------------------------------
 --- Terminal mode
 --- Pressing <Esc> in terminal mode to exit to normal mode
 -----------------------------------------------------------
