@@ -12,21 +12,34 @@ return {
       enabled = true,
       preset = {
         header = [[
- ███▄    █     ██▒   █▓    ██▓    ███▄ ▄███▓
- ██ ▀█   █    ▓██░   █▒   ▓██▒   ▓██▒▀█▀ ██▒
-▓██  ▀█ ██▒    ▓██  █▒░   ▒██▒   ▓██    ▓██░
-▓██▒  ▐▌██▒     ▒██ █░░   ░██░   ▒██    ▒██ 
-▒██░   ▓██░      ▒▀█░     ░██░   ▒██▒   ░██▒
-░ ▒░   ▒ ▒       ░ ▐░     ░▓     ░ ▒░   ░  ░
-░ ░░   ░ ▒░      ░ ░░      ▒ ░   ░  ░      ░
-   ░   ░ ░         ░░      ▒ ░   ░      ░   
-         ░          ░      ░            ░   
-░                        
+   ⣴⣶⣤⡤⠦⣤⣀⣤⠆     ⣈⣭⣿⣶⣿⣦⣼⣆         
+    ⠉⠻⢿⣿⠿⣿⣿⣶⣦⠤⠄⡠⢾⣿⣿⡿⠋⠉⠉⠻⣿⣿⡛⣦      
+          ⠈⢿⣿⣟⠦ ⣾⣿⣿⣷    ⠻⠿⢿⣿⣧⣄    
+           ⣸⣿⣿⢧ ⢻⠻⣿⣿⣷⣄⣀⠄⠢⣀⡀⠈⠙⠿⠄   
+          ⢠⣿⣿⣿⠈    ⣻⣿⣿⣿⣿⣿⣿⣿⣛⣳⣤⣀⣀  
+   ⢠⣧⣶⣥⡤⢄ ⣸⣿⣿⠘  ⢀⣴⣿⣿⡿⠛⣿⣿⣧⠈⢿⠿⠟⠛⠻⠿⠄ 
+  ⣰⣿⣿⠛⠻⣿⣿⡦⢹⣿⣷   ⢊⣿⣿⡏  ⢸⣿⣿⡇ ⢀⣠⣄⣾⠄  
+ ⣠⣿⠿⠛ ⢀⣿⣿⣷⠘⢿⣿⣦⡀ ⢸⢿⣿⣿⣄ ⣸⣿⣿⡇⣪⣿⡿⠿⣿⣷⡄ 
+ ⠙⠃   ⣼⣿⡟  ⠈⠻⣿⣿⣦⣌⡇⠻⣿⣿⣷⣿⣿⣿ ⣿⣿⡇ ⠛⠻⢷⣄
+      ⢻⣿⣿⣄   ⠈⠻⣿⣿⣿⣷⣿⣿⣿⣿⣿⡟ ⠫⢿⣿⡆    
+       ⠻⣿⣿⣿⣿⣶⣶⣾⣿⣿⣿⣿⣿⣿⣿⣿⡟⢀⣀⣤⣾⡿⠃    
         ]],
+        --         [[
+        --  ███▄    █     ██▒   █▓    ██▓    ███▄ ▄███▓
+        --  ██ ▀█   █    ▓██░   █▒   ▓██▒   ▓██▒▀█▀ ██▒
+        -- ▓██  ▀█ ██▒    ▓██  █▒░   ▒██▒   ▓██    ▓██░
+        -- ▓██▒  ▐▌██▒     ▒██ █░░   ░██░   ▒██    ▒██
+        -- ▒██░   ▓██░      ▒▀█░     ░██░   ▒██▒   ░██▒
+        -- ░ ▒░   ▒ ▒       ░ ▐░     ░▓     ░ ▒░   ░  ░
+        -- ░ ░░   ░ ▒░      ░ ░░      ▒ ░   ░  ░      ░
+        --    ░   ░ ░         ░░      ▒ ░   ░      ░
+        --          ░          ░      ░            ░
+        --         ]]
       },
     },
     -- indent = { enabled = true },
     -- input = { enabled = true },
+    image = { enabled = true },
     lazygit = { enabled = true },
     notifier = { enabled = true },
     quickfile = { enabled = true },
@@ -34,7 +47,7 @@ return {
     scroll = { enabled = true },
     statuscolumn = {
       enabled = true,
-      left = { "sign", "mark" }, -- prioritize sign over mark, so recall icon shows instead of letter
+      left = { 'sign', 'mark' }, -- prioritize sign over mark, so recall icon shows instead of letter
     },
     words = { enabled = true },
     -- too many issues with git status, explorer having extra files etc, going to wait for maturity
@@ -49,6 +62,16 @@ return {
           ignored = true,
           jump = { close = true }, -- Close explorer after selecting a file
           actions = {
+            copy_cwd_path = function(_, item)
+              local modify = vim.fn.fnamemodify
+
+              local filepath = item.file
+              local cwd = vim.fn.getcwd()
+              local result = modify(filepath, ':.' .. cwd)
+
+              vim.fn.setreg('*', result)
+              vim.notify('Copied path relative to CWD: ' .. result)
+            end,
             copy_path = function(_, item)
               local modify = vim.fn.fnamemodify
 
@@ -115,6 +138,7 @@ return {
               keys = {
                 ['s'] = 'search_in_directory',
                 ['Y'] = 'copy_path',
+                ['y'] = 'copy_cwd_path',
               },
             },
           },
