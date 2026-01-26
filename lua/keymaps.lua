@@ -7,6 +7,20 @@ keymap_set('n', '<Esc>', '<cmd>nohlsearch<CR>')
 -- Diagnostic keymaps
 keymap_set('n', '<leader>Q', vim.diagnostic.setloclist, 'Open diagnostic [Q]uickfix list')
 
+-- Navigate diagnostics
+keymap_set('n', ']e', function()
+  vim.diagnostic.goto_next({ severity = vim.diagnostic.severity.ERROR })
+end, 'Jump to next error')
+keymap_set('n', '[e', function()
+  vim.diagnostic.goto_prev({ severity = vim.diagnostic.severity.ERROR })
+end, 'Jump to previous error')
+keymap_set('n', ']w', function()
+  vim.diagnostic.goto_next({ severity = vim.diagnostic.severity.WARN })
+end, 'Jump to next warning')
+keymap_set('n', '[w', function()
+  vim.diagnostic.goto_prev({ severity = vim.diagnostic.severity.WARN })
+end, 'Jump to previous warning')
+
 -- navigate windows
 -- See `:help wincmd` for a list of all window commands
 keymap_set('n', '<C-h>', '<C-w><C-h>', 'Move focus to the left window')
