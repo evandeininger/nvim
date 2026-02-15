@@ -19,6 +19,21 @@ return {
         backend = 'tmux',
         enabled = true,
       },
+      -- Add or override prompts. Use <leader>ap to pick one.
+      -- Placeholders: {file}, {this}, {selection}, {quickfix}, {buffers},
+      --   {line}, {position}, {diagnostics}, {diagnostics_all}, {function}, {class}
+      prompts = {
+        -- Override built-ins by using the same key:
+        -- explain = "Explain {this} in simple terms",
+        -- fix = "Fix {this} and explain the change",
+        -- Custom prompts (show up in the prompt picker):
+        refactor = 'Refactor {this} to be more maintainable',
+        -- security = "Review {file} for security issues",
+        -- With a function for dynamic content:
+        -- custom = function(ctx)
+        --   return string.format("Help with buffer %s at line %d", ctx.buf or "?", ctx.row or 0)
+        -- end,
+      },
     },
   },
   keys = {
@@ -79,6 +94,28 @@ return {
         require('sidekick.cli').send { msg = '{file}' }
       end,
       desc = 'Send File',
+    },
+    {
+      '<leader>aq',
+      function()
+        local qf = vim.fn.getqflist()
+        local seen = {}
+        local paths = {}
+        for _, item in ipairs(qf) do
+          local f = item.filename and #item.filename > 0 and item.filename or vim.fn.bufname(item.bufnr)
+          if f and #f > 0 and not seen[f] then
+            seen[f] = true
+            local rel = vim.fn.fnamemodify(f, ':~:.')
+            table.insert(paths, '@' .. rel)
+          end
+        end
+        if #paths == 0 then
+          vim.notify('Quickfix list is empty', vim.log.levels.WARN)
+          return
+        end
+        require('sidekick.cli').send { msg = table.concat(paths, '\n') }
+      end,
+      desc = 'Send Quickfix Files Only',
     },
     {
       '<leader>av',
