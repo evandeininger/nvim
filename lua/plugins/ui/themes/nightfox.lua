@@ -1,5 +1,8 @@
+--- Nightfox (duskfox, etc.). Theme is applied via Themery.
 return {
   'EdenEast/nightfox.nvim',
+  name = 'nightfox',
+  lazy = true,
   config = function()
     require('nightfox').setup {
       groups = {
@@ -24,6 +27,6 @@ return {
         },
       },
     }
-    vim.cmd.colorscheme 'duskfox'
+    -- Colorscheme (e.g. duskfox) is applied via Themery
   end,
 }

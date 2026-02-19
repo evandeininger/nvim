@@ -5,6 +5,9 @@ return {
   { import = 'plugins.ui.todo-comments' }, -- TODO comment highlighting
   { import = 'plugins.ui.lualine' }, -- status line
   -- { import = 'plugins.ui.nvim-tree' }, -- file explorer UI
-  -- { import = 'plugins.ui.nightfox' }, -- colorscheme
-  { import = 'plugins.ui.rosepine' }, -- colorscheme
+  -- themes
+  { import = 'plugins.ui.themery' }, -- colorscheme
+  { import = 'plugins.ui.themes.nightfox' }, -- colorscheme (required for Themery)
+  { import = 'plugins.ui.themes.rosepine' }, -- colorscheme
+  { import = 'plugins.ui.themes.gruvbox' }, -- colorscheme
 }
