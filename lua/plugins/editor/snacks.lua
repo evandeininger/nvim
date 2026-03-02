@@ -47,7 +47,7 @@ return {
         explorer = {
           hidden = true,
           ignored = true,
-          jump = { close = true }, -- Close explorer after selecting a file
+          jump = { close = false }, -- Keep explorer open after opening a file
           actions = {
             copy_cwd_path = function(_, item)
               local modify = vim.fn.fnamemodify
