@@ -12,7 +12,6 @@ else
   require 'keymaps'
   require 'autocmds'
   require 'env'
-  require 'defer'
 
   -- [[ Configure and install plugins ]]
   local ok, lazy = pcall(require, 'lazy')

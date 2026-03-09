@@ -32,7 +32,7 @@ return {
         'Pmenu',
       },
       extra_groups = { -- table: additional groups that should be cleared
-        'NormalFloat', -- plugins which have float panel such as Lazy, Mason, LspInfo
+        'NormalFloat', -- plugins which have float panel such as Lazy, LspInfo
         'FloatBorder',
         'NvimTreeWinSeparator',
         'NvimTreeNormal',

@@ -33,9 +33,6 @@ return {
     end
 
     require('lualine').setup {
-      options = {
-        theme = 'duskfox',
-      },
       sections = {
         lualine_a = { 'mode' },
         lualine_b = { { 'filename', path = 1 } },
