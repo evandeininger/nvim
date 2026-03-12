@@ -1,19 +1,7 @@
 return {
   'folke/sidekick.nvim',
   opts = {
-    -- Disable NES in terminal buffers to avoid cursor/redraw issues when typing in the CLI prompt
-    nes = {
-      enabled = function(buf)
-        buf = buf or vim.api.nvim_get_current_buf()
-        if not vim.api.nvim_buf_is_valid(buf) then
-          return false
-        end
-        if vim.bo[buf].buftype == 'terminal' then
-          return false
-        end
-        return vim.g.sidekick_nes ~= false and vim.b.sidekick_nes ~= false
-      end,
-    },
+    nes = { enabled = false }, -- Next Edit Suggestion (inline suggestions + <Tab> jump/apply) off
     cli = {
       mux = {
         backend = 'tmux',
