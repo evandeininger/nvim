@@ -11,6 +11,11 @@ return {
       zindex = 20,
       on_attach = nil,
     }
+
+    -- <leader>tc toggles context
+    vim.keymap.set('n', '<leader>tc', function()
+      require('treesitter-context').toggle()
+    end, { desc = 'Toggle treesitter context' })
   end,
 }
 
