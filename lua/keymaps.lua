@@ -108,3 +108,6 @@ end, { desc = 'Copy file path relative to CWD', noremap = true, silent = true })
 --- Pressing <Esc> in terminal mode to exit to normal mode
 -----------------------------------------------------------
 vim.keymap.set('t', '<Esc>', [[<C-\><C-n>]], { desc = 'Terminal: exit to Normal mode' })
+
+
+keymap_set('n', '<leader>fh', ':%DiffviewFileHistory<CR>', '[f]ile [h]istory')
