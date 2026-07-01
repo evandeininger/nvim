@@ -10,4 +10,5 @@ return {
   { import = 'plugins.ui.themes.nightfox' }, -- colorscheme (required for Themery)
   { import = 'plugins.ui.themes.rosepine' }, -- colorscheme
   { import = 'plugins.ui.themes.gruvbox' }, -- colorscheme
+  { import = 'plugins.ui.milli' }, -- animated dashboard
 }

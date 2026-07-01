@@ -2,145 +2,148 @@ return {
   'folke/snacks.nvim',
   priority = 1000,
   lazy = false,
+  dependencies = { 'amansingh-afk/milli.nvim' },
   ---@type snacks.Config
-  opts = {
-    -- your configuration comes here
-    -- or leave it empty to use the default settings
-    -- refer to the configuration section below
-    bigfile = { enabled = true },
-    dashboard = {
-      enabled = true,
-      preset = {
-        header = [[
- ███▄    █     ██▒   █▓    ██▓    ███▄ ▄███▓
- ██ ▀█   █    ▓██░   █▒   ▓██▒   ▓██▒▀█▀ ██▒
-▓██  ▀█ ██▒    ▓██  █▒░   ▒██▒   ▓██    ▓██░
-▓██▒  ▐▌██▒     ▒██ █░░   ░██░   ▒██    ▒██
-▒██░   ▓██░      ▒▀█░     ░██░   ▒██▒   ░██▒
-░ ▒░   ▒ ▒       ░ ▐░     ░▓     ░ ▒░   ░  ░
-░ ░░   ░ ▒░      ░ ░░      ▒ ░   ░  ░      ░
-   ░   ░ ░         ░░      ▒ ░   ░      ░
-         ░          ░      ░            ░
-]],
+  opts = function()
+    local splash = require('milli').load { splash = 'shader' }
+
+    return {
+      bigfile = { enabled = true },
+      dashboard = {
+        enabled = true,
+        preset = {
+          -- seed frame 0 so milli can anchor the animation
+          header = table.concat(splash.frames[1], '\n'),
+        },
+        sections = {
+          { section = 'header', padding = 1 },
+          { section = 'keys', gap = 1, padding = 1 },
+          { section = 'startup' },
+        },
       },
-    },
-    -- indent = { enabled = true },
-    -- input = { enabled = true },
-    image = { enabled = true },
-    lazygit = { enabled = true },
-    notifier = { enabled = true },
-    quickfile = { enabled = true },
-    -- scope = { enabled = true },
-    scroll = { enabled = true },
-    statuscolumn = {
-      enabled = true,
-      left = { 'sign', 'mark' }, -- prioritize sign over mark, so recall icon shows instead of letter
-    },
-    words = { enabled = true },
-    -- too many issues with git status, explorer having extra files etc, going to wait for maturity
-    explorer = {
-      enabled = true,
-    },
-    picker = {
-      filter = { cwd = true },
-      sources = {
-        explorer = {
-          hidden = true,
-          ignored = true,
-          jump = { close = false }, -- Keep explorer open after opening a file
-          actions = {
-            copy_cwd_path = function(_, item)
-              local modify = vim.fn.fnamemodify
+      -- indent = { enabled = true },
+      -- input = { enabled = true },
+      image = { enabled = true },
+      lazygit = { enabled = true },
+      notifier = { enabled = true },
+      quickfile = { enabled = true },
+      -- scope = { enabled = true },
+      scroll = { enabled = true },
+      statuscolumn = {
+        enabled = true,
+        left = { 'sign', 'mark' }, -- prioritize sign over mark, so recall icon shows instead of letter
+      },
+      words = { enabled = true },
+      -- too many issues with git status, explorer having extra files etc, going to wait for maturity
+      explorer = {
+        enabled = true,
+        replace_netrw = true,
+      },
+      picker = {
+        filter = { cwd = true },
+        sources = {
+          explorer = {
+            hidden = true,
+            ignored = true,
+            jump = { close = false }, -- Keep explorer open after opening a file
+            actions = {
+              copy_cwd_path = function(_, item)
+                local modify = vim.fn.fnamemodify
 
-              local filepath = item.file
-              local cwd = vim.fn.getcwd()
-              local result = modify(filepath, ':.' .. cwd)
+                local filepath = item.file
+                local cwd = vim.fn.getcwd()
+                local result = modify(filepath, ':.' .. cwd)
 
-              vim.fn.setreg('*', result)
-              vim.notify('Copied path relative to CWD: ' .. result)
-            end,
-            copy_path = function(_, item)
-              local modify = vim.fn.fnamemodify
-
-              local filepath = item.file
-              local filename = modify(filepath, ':t')
-
-              local results = {
-                filepath,
-                modify(filepath, ':.'),
-                modify(filepath, ':~'),
-                filename,
-                modify(filename, ':r'),
-                modify(filename, ':e'),
-              }
-
-              local items = {
-                'Absolute path: ' .. results[1],
-                'Path relative to CWD: ' .. results[2],
-                'Path relative to HOME: ' .. results[3],
-                'Filename: ' .. results[4],
-              }
-
-              if vim.fn.isdirectory(filepath) == 0 then
-                vim.list_extend(items, {
-                  'Filename without extension: ' .. results[5],
-                  'Extension of the filename: ' .. results[6],
-                })
-              end
-
-              vim.ui.select(items, { prompt = 'Choose to copy to clipboard:' }, function(choice, i)
-                if not choice then
-                  vim.notify 'Selection cancelled'
-                  return
-                end
-                if not i then
-                  vim.notify 'Invalid selection'
-                  return
-                end
-                local result = results[i]
                 vim.fn.setreg('*', result)
-                vim.notify('Copied: ' .. result)
-              end)
-            end,
-            search_in_directory = {
-              action = function(_, item)
-                if not item then
-                  return
-                end
-                local dir = vim.fn.fnamemodify(item.file, ':p:h')
-                Snacks.picker.grep {
-                  cwd = dir,
-                  cmd = 'rg',
-                  show_empty = true,
-                  hidden = true,
-                  ignored = true,
-                  follow = false,
-                  supports_live = true,
-                }
+                vim.notify('Copied path relative to CWD: ' .. result)
               end,
+              copy_path = function(_, item)
+                local modify = vim.fn.fnamemodify
+
+                local filepath = item.file
+                local filename = modify(filepath, ':t')
+
+                local results = {
+                  filepath,
+                  modify(filepath, ':.'),
+                  modify(filepath, ':~'),
+                  filename,
+                  modify(filename, ':r'),
+                  modify(filename, ':e'),
+                }
+
+                local items = {
+                  'Absolute path: ' .. results[1],
+                  'Path relative to CWD: ' .. results[2],
+                  'Path relative to HOME: ' .. results[3],
+                  'Filename: ' .. results[4],
+                }
+
+                if vim.fn.isdirectory(filepath) == 0 then
+                  vim.list_extend(items, {
+                    'Filename without extension: ' .. results[5],
+                    'Extension of the filename: ' .. results[6],
+                  })
+                end
+
+                vim.ui.select(items, { prompt = 'Choose to copy to clipboard:' }, function(choice, i)
+                  if not choice then
+                    vim.notify 'Selection cancelled'
+                    return
+                  end
+                  if not i then
+                    vim.notify 'Invalid selection'
+                    return
+                  end
+                  local result = results[i]
+                  vim.fn.setreg('*', result)
+                  vim.notify('Copied: ' .. result)
+                end)
+              end,
+              search_in_directory = {
+                action = function(_, item)
+                  if not item then
+                    return
+                  end
+                  local dir = vim.fn.fnamemodify(item.file, ':p:h')
+                  Snacks.picker.grep {
+                    cwd = dir,
+                    cmd = 'rg',
+                    show_empty = true,
+                    hidden = true,
+                    ignored = true,
+                    follow = false,
+                    supports_live = true,
+                  }
+                end,
+              },
             },
-          },
-          win = {
-            list = {
-              keys = {
-                ['s'] = 'search_in_directory',
-                ['Y'] = 'copy_path',
-                ['y'] = 'copy_cwd_path',
+            win = {
+              list = {
+                keys = {
+                  ['s'] = 'search_in_directory',
+                  ['Y'] = 'copy_path',
+                  ['y'] = 'copy_cwd_path',
+                },
               },
             },
           },
         },
-      },
-      ui_select = true,
-      win = {
-        input = {
-          keys = {
-            ['<C-c>'] = { 'cancel', mode = 'i' },
+        ui_select = true,
+        win = {
+          input = {
+            keys = {
+              ['<C-c>'] = { 'cancel', mode = 'i' },
+            },
           },
         },
       },
-    },
-  },
+    }
+  end,
+  config = function(_, opts)
+    require('snacks').setup(opts)
+    require('milli_snacks').attach { splash = 'shader', loop = true }
+  end,
   keys = {
     -- git
     {
@@ -273,13 +276,6 @@ return {
         require('snacks').picker.git_branches()
       end,
       desc = '[G]it [B]ranches',
-    },
-    {
-      '<leader>gf',
-      function()
-        require('snacks').picker.git_files { filter = { cwd = true } }
-      end,
-      desc = '[G]it [F]iles',
     },
   },
 }
