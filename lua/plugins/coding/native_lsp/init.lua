@@ -6,6 +6,16 @@ return {
     local capabilities = vim.lsp.protocol.make_client_capabilities()
     capabilities = vim.tbl_deep_extend('force', capabilities, require('cmp_nvim_lsp').default_capabilities())
 
+    -- LSP incremental sync breaks on some special buffers (nil prev_line in vim.lsp.sync).
+    -- nvim-dap REPL uses buftype=prompt; other tools may still attach a client there.
+    local function lsp_forbidden_buffer(bufnr)
+      if vim.bo[bufnr].buftype == 'prompt' then
+        return true
+      end
+      local ft = vim.bo[bufnr].filetype
+      return ft == 'dap-repl' or ft == 'dap-float' or vim.startswith(ft, 'dapui_')
+    end
+
     vim.lsp.config('*', {
       capabilities = capabilities,
       root_markers = { '.git' },
@@ -71,47 +81,53 @@ return {
       },
     }
     -- Start TypeScript server with the project's node_modules binary (absolute path) so it actually runs.
+    local function attach_ts_ls(bufnr)
+      bufnr = bufnr or vim.api.nvim_get_current_buf()
+      if vim.bo[bufnr].buftype ~= '' then
+        return
+      end
+      local path = vim.api.nvim_buf_get_name(bufnr)
+      if path == '' or path:match('^%w+://') then
+        return
+      end
+      for _, c in ipairs(vim.lsp.get_clients({ bufnr = bufnr })) do
+        if c.name == 'ts_ls' then
+          return
+        end
+      end
+      local root = vim.fs.root(path, { 'tsconfig.json', 'jsconfig.json', 'package.json', '.git' })
+        or vim.fn.fnamemodify(path, ':p:h')
+      local tsserver = root .. '/node_modules/.bin/typescript-language-server'
+      local cmd
+      if vim.fn.executable(tsserver) == 1 then
+        cmd = { tsserver, '--stdio' }
+      else
+        cmd = { 'npx', '--yes', 'typescript-language-server', '--stdio' }
+      end
+      vim.lsp.start({
+        name = 'ts_ls',
+        cmd = cmd,
+        root_dir = root,
+        capabilities = capabilities,
+        filetypes = ts_filetypes,
+        single_file_support = true,
+        init_options = {
+          preferences = {
+            disableSuggestions = false,
+            includeCompletionsForModuleExports = true,
+            includeCompletionsWithInsertText = true,
+          },
+        },
+        settings = ts_ls_settings,
+        bufnr = bufnr,
+      })
+    end
+
     vim.api.nvim_create_autocmd('FileType', {
       group = vim.api.nvim_create_augroup('native-lsp-ts-start', { clear = true }),
       pattern = ts_filetypes,
       callback = function(ev)
-        local bufnr = ev.buf
-        local path = vim.api.nvim_buf_get_name(bufnr)
-        if path == '' or path:match('^%w+://') then
-          return
-        end
-        for _, c in ipairs(vim.lsp.get_clients({ bufnr = bufnr })) do
-          if c.name == 'ts_ls' then
-            return
-          end
-        end
-        local root = vim.fs.root(path, { 'tsconfig.json', 'jsconfig.json', 'package.json', '.git' })
-          or vim.fn.fnamemodify(path, ':p:h')
-        local tsserver = root .. '/node_modules/.bin/typescript-language-server'
-        local cmd
-        if vim.fn.executable(tsserver) == 1 then
-          cmd = { tsserver, '--stdio' }
-        else
-          -- Fallback: npx uses project node_modules or runs from cache (npm i -D typescript-language-server in project if needed)
-          cmd = { 'npx', '--yes', 'typescript-language-server', '--stdio' }
-        end
-        vim.lsp.start({
-          name = 'ts_ls',
-          cmd = cmd,
-          root_dir = root,
-          capabilities = capabilities,
-          filetypes = ts_filetypes,
-          single_file_support = true,
-          init_options = {
-            preferences = {
-              disableSuggestions = false,
-              includeCompletionsForModuleExports = true,
-              includeCompletionsWithInsertText = true,
-            },
-          },
-          settings = ts_ls_settings,
-          bufnr = bufnr,
-        })
+        attach_ts_ls(ev.buf)
       end,
     })
 
@@ -126,11 +142,33 @@ return {
       },
     })
 
-    vim.lsp.enable({ 'pyright', 'lua_ls' })
+    vim.lsp.config('omnisharp', {
+      cmd = { 'omnisharp', '--languageserver' },
+      filetypes = { 'cs' },
+      root_markers = { '*.sln', '*.csproj', '.git' },
+    })
+
+    vim.lsp.enable({ 'pyright', 'lua_ls', 'omnisharp' })
 
     vim.api.nvim_create_autocmd('LspAttach', {
       group = vim.api.nvim_create_augroup('kickstart-lsp-attach', { clear = true }),
       callback = function(event)
+        if lsp_forbidden_buffer(event.buf) then
+          -- Neovim runs LspAttach before Client:on_attach sets attached_buffers[bufnr].
+          -- A synchronous buf_detach_client here runs changetracking.reset_buf, then
+          -- on_attach still sets attached_buffers=true without re-calling changetracking.init.
+          -- The next nvim_buf_set_lines (e.g. nvim-dap REPL) then hits send_changes with no buf_state.
+          local bufnr, client_id = event.buf, event.data.client_id
+          vim.schedule(function()
+            if not vim.api.nvim_buf_is_valid(bufnr) or not lsp_forbidden_buffer(bufnr) then
+              return
+            end
+            if vim.lsp.buf_is_attached(bufnr, client_id) then
+              vim.lsp.buf_detach_client(bufnr, client_id)
+            end
+          end)
+          return
+        end
         local map = function(keys, func, desc, mode)
           mode = mode or 'n'
           vim.keymap.set(mode, keys, func, { buffer = event.buf, desc = 'LSP: ' .. desc })
@@ -176,12 +214,23 @@ return {
       end,
     })
 
+    local function restart_ts_ls()
+      for _, c in ipairs(vim.lsp.get_clients { name = 'ts_ls' }) do
+        vim.lsp.stop_client(c.id, true)
+      end
+      vim.defer_fn(function()
+        for _, bufnr in ipairs(vim.api.nvim_list_bufs()) do
+          if vim.api.nvim_buf_is_valid(bufnr) and vim.tbl_contains(ts_filetypes, vim.bo[bufnr].filetype) then
+            attach_ts_ls(bufnr)
+          end
+        end
+      end, 150)
+    end
+
     vim.api.nvim_create_autocmd({ 'BufWritePost' }, {
       group = vim.api.nvim_create_augroup('restart-ts-server', { clear = true }),
       pattern = { 'tsconfig.json', 'jsconfig.json', 'package.json' },
-      callback = function()
-        vim.cmd('lsp restart ts_ls')
-      end,
+      callback = restart_ts_ls,
     })
 
     vim.diagnostic.config({
@@ -194,11 +243,10 @@ return {
     })
 
     vim.api.nvim_create_user_command('TsRestart', function()
-      vim.cmd('lsp stop ts_ls')
+      restart_ts_ls()
       vim.defer_fn(function()
-        vim.cmd('lsp enable ts_ls')
         vim.notify('TypeScript server restarted', vim.log.levels.INFO)
-      end, 500)
+      end, 200)
     end, { desc = 'Restart TypeScript Language Server' })
   end,
 }
