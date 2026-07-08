@@ -5,7 +5,8 @@ return {
   dependencies = { 'amansingh-afk/milli.nvim' },
   ---@type snacks.Config
   opts = function()
-    local splash = require('milli').load { splash = 'shader' }
+    local splash_name = vim.g.milli_splash or 'fire'
+    local splash = require('milli').load { splash = splash_name }
 
     return {
       bigfile = { enabled = true },
@@ -142,7 +143,7 @@ return {
   end,
   config = function(_, opts)
     require('snacks').setup(opts)
-    require('milli_snacks').attach { splash = 'shader', loop = true }
+    require('milli_snacks').attach { splash = vim.g.milli_splash or 'fire', loop = true }
   end,
   keys = {
     -- git
