@@ -30,7 +30,7 @@ return {
     lazy = true,
   },
   -- Native LSP: vim.lsp.config() + vim.lsp.enable() (config in lua/plugins/coding/native_lsp/)
-  -- Install language servers yourself (e.g. npm i -g typescript-language-server, pip install pyright).
+  -- Install language servers yourself (e.g. yarn add -D typescript@^7, pip install pyright).
   -- See :help lsp-quickstart and https://microsoft.github.io/language-server-protocol/implementors/servers/
   {
     dir = vim.fn.stdpath('config') .. '/lua/plugins/coding/native_lsp',

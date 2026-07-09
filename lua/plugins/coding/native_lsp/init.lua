@@ -48,88 +48,8 @@ return {
       end,
     })
 
-    local ts_filetypes = {
-      'javascript',
-      'javascriptreact',
-      'javascript.jsx',
-      'typescript',
-      'typescriptreact',
-      'typescript.tsx',
-    }
-    local ts_ls_settings = {
-      typescript = {
-        inlayHints = {
-          includeInlayParameterNameHints = 'all',
-          includeInlayParameterNameHintsWhenArgumentMatchesName = false,
-          includeInlayFunctionParameterTypeHints = true,
-          includeInlayVariableTypeHints = true,
-          includeInlayPropertyDeclarationTypeHints = true,
-          includeInlayFunctionLikeReturnTypeHints = true,
-          includeInlayEnumMemberValueHints = true,
-        },
-      },
-      javascript = {
-        inlayHints = {
-          includeInlayParameterNameHints = 'all',
-          includeInlayParameterNameHintsWhenArgumentMatchesName = false,
-          includeInlayFunctionParameterTypeHints = true,
-          includeInlayVariableTypeHints = true,
-          includeInlayPropertyDeclarationTypeHints = true,
-          includeInlayFunctionLikeReturnTypeHints = true,
-          includeInlayEnumMemberValueHints = true,
-        },
-      },
-    }
-    -- Start TypeScript server with the project's node_modules binary (absolute path) so it actually runs.
-    local function attach_ts_ls(bufnr)
-      bufnr = bufnr or vim.api.nvim_get_current_buf()
-      if vim.bo[bufnr].buftype ~= '' then
-        return
-      end
-      local path = vim.api.nvim_buf_get_name(bufnr)
-      if path == '' or path:match('^%w+://') then
-        return
-      end
-      for _, c in ipairs(vim.lsp.get_clients({ bufnr = bufnr })) do
-        if c.name == 'ts_ls' then
-          return
-        end
-      end
-      local root = vim.fs.root(path, { 'tsconfig.json', 'jsconfig.json', 'package.json', '.git' })
-        or vim.fn.fnamemodify(path, ':p:h')
-      local tsserver = root .. '/node_modules/.bin/typescript-language-server'
-      local cmd
-      if vim.fn.executable(tsserver) == 1 then
-        cmd = { tsserver, '--stdio' }
-      else
-        cmd = { 'npx', '--yes', 'typescript-language-server', '--stdio' }
-      end
-      vim.lsp.start({
-        name = 'ts_ls',
-        cmd = cmd,
-        root_dir = root,
-        capabilities = capabilities,
-        filetypes = ts_filetypes,
-        single_file_support = true,
-        init_options = {
-          preferences = {
-            disableSuggestions = false,
-            includeCompletionsForModuleExports = true,
-            includeCompletionsWithInsertText = true,
-          },
-        },
-        settings = ts_ls_settings,
-        bufnr = bufnr,
-      })
-    end
-
-    vim.api.nvim_create_autocmd('FileType', {
-      group = vim.api.nvim_create_augroup('native-lsp-ts-start', { clear = true }),
-      pattern = ts_filetypes,
-      callback = function(ev)
-        attach_ts_ls(ev.buf)
-      end,
-    })
+    local tsgo = require('plugins.coding.native_lsp.tsgo')
+    tsgo.setup(capabilities)
 
     vim.lsp.config('lua_ls', {
       cmd = { 'lua-language-server' },
@@ -214,23 +134,12 @@ return {
       end,
     })
 
-    local function restart_ts_ls()
-      for _, c in ipairs(vim.lsp.get_clients { name = 'ts_ls' }) do
-        vim.lsp.stop_client(c.id, true)
-      end
-      vim.defer_fn(function()
-        for _, bufnr in ipairs(vim.api.nvim_list_bufs()) do
-          if vim.api.nvim_buf_is_valid(bufnr) and vim.tbl_contains(ts_filetypes, vim.bo[bufnr].filetype) then
-            attach_ts_ls(bufnr)
-          end
-        end
-      end, 150)
-    end
-
     vim.api.nvim_create_autocmd({ 'BufWritePost' }, {
-      group = vim.api.nvim_create_augroup('restart-ts-server', { clear = true }),
-      pattern = { 'tsconfig.json', 'jsconfig.json', 'package.json' },
-      callback = restart_ts_ls,
+      group = vim.api.nvim_create_augroup('restart-tsgo', { clear = true }),
+      pattern = { 'tsconfig.json', 'jsconfig.json', 'package.json', 'yarn.lock' },
+      callback = function()
+        tsgo.restart()
+      end,
     })
 
     vim.diagnostic.config({
@@ -243,10 +152,33 @@ return {
     })
 
     vim.api.nvim_create_user_command('TsRestart', function()
-      restart_ts_ls()
+      tsgo.restart()
       vim.defer_fn(function()
-        vim.notify('TypeScript server restarted', vim.log.levels.INFO)
+        vim.notify('tsgo restarted', vim.log.levels.INFO)
       end, 200)
-    end, { desc = 'Restart TypeScript Language Server' })
+    end, { desc = 'Restart tsgo (Go TypeScript language server)' })
+
+    vim.api.nvim_create_user_command('LspInfo', function()
+      local buf = vim.api.nvim_get_current_buf()
+      local path = vim.api.nvim_buf_get_name(buf)
+      local clients = vim.lsp.get_clients { bufnr = buf }
+
+      if #clients == 0 then
+        vim.notify(('No LSP clients on buffer %d (%s)'):format(buf, path ~= '' and path or '[no file]'), vim.log.levels.WARN)
+      else
+        for _, c in ipairs(clients) do
+          vim.notify(
+            ('[%s] id=%d root=%s cmd=%s'):format(c.name, c.id, c.root_dir or '?', vim.inspect(c.cmd)),
+            vim.log.levels.INFO
+          )
+        end
+      end
+
+      local status = vim.lsp.status()
+      if status ~= '' then
+        vim.notify('LSP status: ' .. status, vim.log.levels.INFO)
+      end
+      vim.notify('Full report: :checkhealth vim.lsp', vim.log.levels.INFO)
+    end, { desc = 'Show LSP clients attached to the current buffer' })
   end,
 }
