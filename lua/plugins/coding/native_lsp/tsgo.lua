@@ -71,9 +71,28 @@ local function is_executable(bin)
   return vim.fn.filereadable(bin) == 1
 end
 
+--- Read the major version from the owning `typescript` package.json (no process spawn).
+local function pkg_major_version(bin)
+  local path = vim.fn.exepath(bin)
+  local real = vim.uv.fs_realpath(path ~= '' and path or bin)
+  local pkg_dir = real and vim.fs.root(real, 'package.json')
+  if not pkg_dir then
+    return nil
+  end
+  local ok, lines = pcall(vim.fn.readfile, vim.fs.joinpath(pkg_dir, 'package.json'))
+  local ok_json, pkg = pcall(vim.json.decode, ok and table.concat(lines, '\n') or '')
+  if ok_json and type(pkg) == 'table' and pkg.name == 'typescript' then
+    return tonumber(tostring(pkg.version):match('^(%d+)'))
+  end
+end
+
 local function tsc_major_version(bin)
   if not is_executable(bin) then
     return nil
+  end
+  local major = pkg_major_version(bin)
+  if major then
+    return major
   end
   local out = vim.system({ bin, '--version' }, { text = true }):wait()
   return out.stdout and tonumber(out.stdout:match('Version (%d+)'))

@@ -1,6 +1,15 @@
 return {
   'nvim-lualine/lualine.nvim',
+  event = 'VeryLazy',
   dependencies = { 'nvim-tree/nvim-web-devicons' },
+  init = function()
+    -- Avoid a flash of empty statusline space before lualine loads (LazyVim pattern).
+    if vim.fn.argc(-1) > 0 then
+      vim.o.statusline = ' '
+    else
+      vim.o.laststatus = 0
+    end
+  end,
   config = function()
     -- Track last buffer with a real filename (for tabline when in explorer/dashboard/etc)
     local last_named_file = nil
@@ -17,6 +26,7 @@ return {
     vim.api.nvim_create_autocmd('BufEnter', {
       callback = update_last_named_file,
     })
+    update_last_named_file()
 
     local function tabline_filename()
       local buf = vim.api.nvim_get_current_buf()

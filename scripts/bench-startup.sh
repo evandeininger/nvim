@@ -1,9 +1,11 @@
 #!/usr/bin/env bash
 # Benchmark interactive nvim startup (dashboard, no file args) in a real TTY via tmux.
-# Usage: scripts/bench-startup.sh [runs=10] [outdir=/private/tmp/opencode/nvim-perf]
+# Usage: scripts/bench-startup.sh [runs=10] [outdir=/private/tmp/opencode/nvim-perf] [file]
+# With [file], opens that file instead of the dashboard.
 set -euo pipefail
 RUNS=${1:-10}
 OUT=${2:-/private/tmp/opencode/nvim-perf}
+FILE=${3:-}
 PROBE="$(cd "$(dirname "$0")" && pwd)/bench-probe.lua"
 mkdir -p "$OUT"
 SESSION="nvimbench$$"
@@ -17,7 +19,7 @@ for i in $(seq 1 "$RUNS"); do
   res="$OUT/probe-$i.txt"
   rm -f "$log" "$res"
   tmux respawn-pane -k -t "$SESSION" \
-    "NVIM_BENCH_OUT='$res' nvim --startuptime '$log' --cmd 'luafile $PROBE'"
+    "NVIM_BENCH_OUT='$res' nvim --startuptime '$log' --cmd 'luafile $PROBE' $FILE"
   for _ in $(seq 1 400); do [[ -s "$res" ]] && break; sleep 0.05; done
   started=$(grep -- '--- NVIM STARTED ---' "$log" | tail -1 | awk '{print $1}')
   line="started=$started $(cat "$res")"
