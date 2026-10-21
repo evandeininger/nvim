@@ -2,20 +2,12 @@ return {
   'folke/snacks.nvim',
   priority = 1000,
   lazy = false,
-  dependencies = { 'amansingh-afk/milli.nvim' },
   ---@type snacks.Config
   opts = function()
-    local splash_name = vim.g.milli_splash or 'fire'
-    local splash = require('milli').load { splash = splash_name }
-
     return {
       bigfile = { enabled = true },
       dashboard = {
         enabled = true,
-        preset = {
-          -- seed frame 0 so milli can anchor the animation
-          header = table.concat(splash.frames[1], '\n'),
-        },
         sections = {
           { section = 'header', padding = 1 },
           { section = 'keys', gap = 1, padding = 1 },
@@ -140,10 +132,6 @@ return {
         },
       },
     }
-  end,
-  config = function(_, opts)
-    require('snacks').setup(opts)
-    require('milli_snacks').attach { splash = vim.g.milli_splash or 'fire', loop = true }
   end,
   keys = {
     -- git
