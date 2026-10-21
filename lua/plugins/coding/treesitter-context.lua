@@ -1,6 +1,17 @@
 return {
   'nvim-treesitter/nvim-treesitter-context',
+  event = { 'BufReadPost', 'BufNewFile' },
+  cmd = 'TSContext',
   dependencies = { 'nvim-treesitter/nvim-treesitter' },
+  keys = {
+    {
+      '<leader>tc',
+      function()
+        require('treesitter-context').toggle()
+      end,
+      desc = 'Toggle treesitter context',
+    },
+  },
   config = function()
     require('treesitter-context').setup {
       enable = true,
@@ -11,11 +22,6 @@ return {
       zindex = 20,
       on_attach = nil,
     }
-
-    -- <leader>tc toggles context
-    vim.keymap.set('n', '<leader>tc', function()
-      require('treesitter-context').toggle()
-    end, { desc = 'Toggle treesitter context' })
   end,
 }
 

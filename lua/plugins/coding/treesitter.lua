@@ -1,6 +1,7 @@
 return {
   'nvim-treesitter/nvim-treesitter',
-  event = 'VeryLazy',
+  event = { 'BufReadPost', 'BufNewFile' },
+  cmd = { 'TSInstall', 'TSUpdate', 'TSUninstall', 'TSInstallInfo', 'TSModuleInfo', 'TSBufToggle', 'TSEnable', 'TSDisable' },
   main = 'nvim-treesitter.configs',
   opts = {
     ensure_installed = {

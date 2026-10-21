@@ -4,6 +4,7 @@ return {
   { import = 'plugins.coding.treesitter' }, -- advanced syntax parsing
   { import = 'plugins.coding.completion' }, -- code completion engine
   { import = 'plugins.coding.treesitter-context' }, -- code context display
+  { import = 'plugins.coding.render-markdown' }, -- inline markdown rendering
   { import = 'plugins.coding.prisma' }, -- prisma syntax support
   { import = 'plugins.coding.json5' }, -- json5 syntax support
   { import = 'plugins.coding.markdown-preview' }, -- markdown preview

@@ -1,5 +1,6 @@
 return {
   "emrearmagan/atlas.nvim",
+  cmd = { "AtlasPulls", "AtlasIssues", "AtlasSearch", "AtlasLogs", "AtlasClearCache", "AtlasCreatePR", "AtlasCreateIssue" },
   dependencies = {
     "MeanderingProgrammer/render-markdown.nvim", -- optional, good for Jira markdown
     "sindrets/diffview.nvim",                    -- optional, for PR diffs

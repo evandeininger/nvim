@@ -2,16 +2,29 @@
 
 return {
   'mfussenegger/nvim-dap',
-  event = 'VeryLazy',
+  cmd = {
+    'DapContinue',
+    'DapToggleBreakpoint',
+    'DapClearBreakpoints',
+    'DapToggleRepl',
+    'DapStepOver',
+    'DapStepInto',
+    'DapStepOut',
+    'DapPause',
+    'DapTerminate',
+    'DapDisconnect',
+    'DapRestartFrame',
+    'DapNew',
+    'DapShowLog',
+    'DapSetLogLevel',
+  },
   dependencies = {
     'rcarriga/nvim-dap-ui',
     'nvim-neotest/nvim-nio',
     'leoluz/nvim-dap-go',
+    'rcarriga/cmp-dap',
   },
   keys = function(_, keys)
-    local dap = require 'dap'
-    local dapui = require 'dapui'
-
     -- nvim-dap picks configs from the current buffer's filetype; Snacks pickers use non-code
     -- filetypes, so run buffer-sensitive actions from a window that shows real source (#).
     local picker_ft = {
@@ -47,25 +60,28 @@ return {
     end
 
     return {
-      { '<F5>', function() with_code_win(function() dap.continue() end) end, desc = 'Debug: Start/Continue' },
-      { '<F1>', dap.step_into, desc = 'Debug: Step Into' },
-      { '<F2>', dap.step_over, desc = 'Debug: Step Over' },
-      { '<F3>', dap.step_out, desc = 'Debug: Step Out' },
+      { '<F5>', function() with_code_win(function() require('dap').continue() end) end, desc = 'Debug: Start/Continue' },
+      { '<F1>', function() require('dap').step_into() end, desc = 'Debug: Step Into' },
+      { '<F2>', function() require('dap').step_over() end, desc = 'Debug: Step Over' },
+      { '<F3>', function() require('dap').step_out() end, desc = 'Debug: Step Out' },
       {
         '<leader>b',
-        function() with_code_win(function() dap.toggle_breakpoint() end) end,
+        function() with_code_win(function() require('dap').toggle_breakpoint() end) end,
         desc = 'Debug: Toggle Breakpoint',
       },
       {
         '<leader>B',
         function()
           with_code_win(function()
-            dap.set_breakpoint(vim.fn.input 'Breakpoint condition: ')
+            require('dap').set_breakpoint(vim.fn.input 'Breakpoint condition: ')
           end)
         end,
         desc = 'Debug: Set Breakpoint',
       },
-      { '<F7>', dapui.toggle, desc = 'Debug: Toggle DAP UI' },
+      { '<F7>', function() require('dapui').toggle() end, desc = 'Debug: Toggle DAP UI' },
+      -- no rhs: lazy loads the plugin, then the mapping defined in config handles the key
+      { '<leader>dS', desc = 'Save DAP session' },
+      { '<leader>dl', desc = 'Load last DAP session' },
       unpack(keys),
     }
   end,
