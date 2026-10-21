@@ -1,3 +1,5 @@
+vim.loader.enable()
+
 if vim.g.vscode then
   -- Enable clipboard sharing in VSCode
   vim.opt.clipboard = 'unnamedplus'
@@ -29,6 +31,11 @@ else
     install = {
       missing = true,
       colorscheme = { 'nightfox' }, -- fallback colorscheme
+    },
+    performance = {
+      rtp = {
+        disabled_plugins = { 'gzip', 'tarPlugin', 'tohtml', 'tutor', 'zipPlugin', 'netrwPlugin' },
+      },
     },
     ui = {
       wrap = true, -- wrap lines in UI

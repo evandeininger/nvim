@@ -3,6 +3,7 @@ local keymap_set = require('utils').keymap_set
 return {
   'fnune/recall.nvim',
   version = '*',
+  event = 'VeryLazy',
   config = function()
     local recall = require 'recall'
     local recallSnacks = require 'recall.snacks'
